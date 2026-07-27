@@ -731,6 +731,7 @@ namespace esphome
                   if (current_command.state == BLECommandState::WAITING_FOR_RESPONSE)
                   {
                     ESP_LOGI(TAG, "[%s] Received VCSEC OK message, command completed", current_command.execute_name.c_str());
+                    publishSensor(NumericSensorId::CommandLatency, (float)(millis() - current_command.started_at));
                     command_queue_.pop();
                     return;
                   }
@@ -820,6 +821,7 @@ namespace esphome
                 if (current_command.state == BLECommandState::WAITING_FOR_RESPONSE)
                 {
                   ESP_LOGI(TAG, "[%s] Received CarServer OK message, command completed", current_command.execute_name.c_str());
+                  publishSensor(NumericSensorId::CommandLatency, (float)(millis() - current_command.started_at));
                   /*
                   *   If command was an action message, then set to request an update for its associated data (not immediately
                   *   in order to give time for the command to complete)
@@ -850,6 +852,7 @@ namespace esphome
                       if (current_command.state == BLECommandState::WAITING_FOR_RESPONSE)
                       {
                         ESP_LOGI(TAG, "[%s] Received CarServer OK message, command completed", current_command.execute_name.c_str());
+                  publishSensor(NumericSensorId::CommandLatency, (float)(millis() - current_command.started_at));
                         command_queue_.pop();
                         return;
                       }
@@ -1305,10 +1308,13 @@ namespace esphome
         esp_gatt_write_type_t write_type, esp_gatt_auth_req_t auth_req)
     {
       ESP_LOGD(TAG, "BLE TX: %s", format_hex(message_buffer, message_length).c_str());
-      // BLE MTU is 23 bytes, so we need to split the message into chunks (20 bytes as in vehicle_command)
-      for (size_t i = 0; i < message_length; i += BLOCK_LENGTH)
+      // Chunk at the negotiated MTU-3 (ATT header), capped, never below the
+      // 23-byte-default-safe 20. Fewer chunks = fewer radio events = lower latency.
+      int block = std::min((int) BLOCK_LENGTH_MAX, (int) this->effective_mtu_ - 3);
+      if (block < BLOCK_LENGTH) block = BLOCK_LENGTH;
+      for (size_t i = 0; i < message_length; i += block)
       {
-        size_t chunkLength = std::min(static_cast<size_t>(BLOCK_LENGTH), message_length - i);
+        size_t chunkLength = std::min(static_cast<size_t>(block), message_length - i);
         std::vector<unsigned char> chunk(message_buffer + i, message_buffer + i + chunkLength);
 
         // add to write queue
@@ -2168,7 +2174,35 @@ namespace esphome
           }
           ESP_LOGD(TAG, "Connection ID: %s", format_hex(connection_id, 16).c_str());
           tesla_ble_client_->setConnectionID(connection_id);
+
+          // --- Latency tuning (this fork) -------------------------------
+          // The car is always awake in-cabin, so command latency is pure
+          // radio scheduling. Two levers, requested the instant we connect:
+          //   1. Tight connection interval (15-30ms vs the slow default) so
+          //      the queued NO_RSP chunks and the response notification ride
+          //      the next radio event instead of waiting up to hundreds of ms.
+          //   2. Larger MTU so a signed command is fewer chunks (see
+          //      effective_mtu_ / writeBLE).
+          esp_ble_conn_update_params_t conn_params = {};
+          memcpy(conn_params.bda, this->parent()->get_remote_bda(), sizeof(esp_bd_addr_t));
+          conn_params.min_int = 0x0C;   // 12 * 1.25ms = 15ms
+          conn_params.max_int = 0x18;   // 24 * 1.25ms = 30ms
+          conn_params.latency = 0;
+          conn_params.timeout = 400;    // 4s supervision
+          esp_err_t cp = esp_ble_gap_update_conn_params(&conn_params);
+          ESP_LOGI(TAG, "Requested 15-30ms connection interval (status=%d)", cp);
+          esp_err_t mt = esp_ble_gattc_send_mtu_req(gattc_if, param->open.conn_id);
+          ESP_LOGI(TAG, "Requested larger MTU (status=%d)", mt);
         }
+        break;
+      }
+
+      case ESP_GATTC_CFG_MTU_EVT:
+      {
+        this->effective_mtu_ = param->cfg_mtu.mtu;
+        ESP_LOGI(TAG, "Negotiated MTU = %d (chunk size now %d)",
+                 this->effective_mtu_,
+                 std::min((int) BLOCK_LENGTH_MAX, (int) this->effective_mtu_ - 3));
         break;
       }
 

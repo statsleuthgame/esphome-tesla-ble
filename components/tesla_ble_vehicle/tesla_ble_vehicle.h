@@ -10,6 +10,7 @@
 #include <functional>
 
 #include <esp_gattc_api.h>
+#include <esp_gap_ble_api.h>
 #include <esphome/components/binary_sensor/binary_sensor.h>
 #include <esphome/components/text_sensor/text_sensor.h>
 #include <esphome/components/sensor/sensor.h>
@@ -149,7 +150,9 @@ namespace esphome
         static const int MAX_BLE_MESSAGE_SIZE = 4096; // Max size of a BLE message
         static const int RX_TIMEOUT = 1 * 1000;       // Timeout interval between receiving chunks of a message (1s)
         static const int MAX_LATENCY = 4 * 1000;      // Max allowed error when syncing vehicle clock (4s)
-        static const int BLOCK_LENGTH = 20;           // BLE MTU is 23 bytes, so we need to split the message into chunks (20 bytes as in vehicle_command)
+        static const int BLOCK_LENGTH = 20;           // fallback chunk before MTU is negotiated (safe at the 23-byte default)
+        static const int BLOCK_LENGTH_MAX = 180;      // cap once a larger MTU is granted
+        uint16_t effective_mtu_ = 23;                 // updated on ESP_GATTC_CFG_MTU_EVT
         static const int MAX_RETRIES = 5;             // Max number of retries for a command
         static const int COMMAND_TIMEOUT = 30 * 1000; // Overall timeout for a command (30s)
 
@@ -266,6 +269,7 @@ namespace esphome
             ChargerPhases,
             ChargeRate,
             DriverTemp,
+            CommandLatency,
             Count
         };
 

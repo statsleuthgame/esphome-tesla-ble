@@ -188,6 +188,10 @@ tesla_ble_vehicle:
     id: "driver_temp"
     name: "Climate temperature" # although it's the driver side temperature setting, use it for the overall climate setting
     disabled_by_default: true
+  command_latency:
+    id: "command_latency"
+    name: "Command latency"
+    entity_category: diagnostic
 
 button:
   - platform: template
