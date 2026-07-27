@@ -1539,7 +1539,7 @@ namespace esphome
           action_str);
     }
 
-    int TeslaBLEVehicle::sendCarServerVehicleActionMessage(BLE_CarServer_VehicleAction action, int param, uint64_t long_param)
+    int TeslaBLEVehicle::sendCarServerVehicleActionMessage(BLE_CarServer_VehicleAction action, float param, uint64_t long_param)
     /*
     *   Causes the appropriate message to be built using the ACTION_SPECIFICS table.
     */
@@ -1572,7 +1572,7 @@ namespace esphome
             // Need to create a vehicle action message
               if (long_param == 0)
               {
-                return_code = tesla_ble_client_->buildCarServerVehicleActionMessage (static_cast<int32_t>(param), static_message_buffer_, &message_length, get_action_detail(action).actionTag);
+                return_code = tesla_ble_client_->buildCarServerVehicleActionMessage (param, static_message_buffer_, &message_length, get_action_detail(action).actionTag);
               }
               else
               {
@@ -1605,7 +1605,7 @@ namespace esphome
           }
           return 0;
         };
-        ESP_LOGI(TAG, "[%s] Adding command to queue (param=%d)", action_str.c_str(), static_cast<int>(param));
+        ESP_LOGI(TAG, "[%s] Adding command to queue (param=%.1f)", action_str.c_str(), param);
       if (get_action_detail(action).whichMsg == AllowedMsg::VehicleActionMessage)
       {
         placeAtFrontOfQueue (UniversalMessage_Domain_DOMAIN_INFOTAINMENT, execute_cmd, action_str, action);

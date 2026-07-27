@@ -331,7 +331,7 @@ namespace esphome
     
             int sendVCSECActionMessage(VCSEC_RKEAction_E action);
             int sendVCSECClosureMoveRequestMessage (int moveWhat, VCSEC_ClosureMoveType_E moveType);
-            int sendCarServerVehicleActionMessage(BLE_CarServer_VehicleAction action, int param, uint64_t long_param = 0);
+            int sendCarServerVehicleActionMessage(BLE_CarServer_VehicleAction action, float param, uint64_t long_param = 0);
             int sendSessionInfoRequest(UniversalMessage_Domain domain);
             int sendVCSECInformationRequest(void);
             void enqueueVCSECInformationRequest(bool force = false);

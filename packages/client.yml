@@ -580,11 +580,10 @@ number:
     update_interval: 2s
     min_value: 15
     max_value: 28
-    step: 1
+    step: 0.5
     set_action:
       - lambda: |-
-          int var_x = static_cast<int>(x);
-          id(tesla_ble_vehicle_id)->sendCarServerVehicleActionMessage(tesla_ble_vehicle::BLE_CarServer_VehicleAction::SET_CLIMATE_TEMP, var_x);
+          id(tesla_ble_vehicle_id)->sendCarServerVehicleActionMessage(tesla_ble_vehicle::BLE_CarServer_VehicleAction::SET_CLIMATE_TEMP, x);
     lambda: |-
       if (id(driver_temp).has_state())
       {
