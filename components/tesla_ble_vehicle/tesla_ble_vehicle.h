@@ -152,7 +152,6 @@ namespace esphome
         static const int MAX_LATENCY = 4 * 1000;      // Max allowed error when syncing vehicle clock (4s)
         static const int BLOCK_LENGTH = 20;           // fallback chunk before MTU is negotiated (safe at the 23-byte default)
         static const int BLOCK_LENGTH_MAX = 180;      // cap once a larger MTU is granted
-        uint16_t effective_mtu_ = 23;                 // updated on ESP_GATTC_CFG_MTU_EVT
         static const int MAX_RETRIES = 5;             // Max number of retries for a command
         static const int COMMAND_TIMEOUT = 30 * 1000; // Overall timeout for a command (30s)
 
@@ -278,6 +277,7 @@ namespace esphome
                                 public esphome::api::CustomAPIDevice
         {
         public:
+            uint16_t effective_mtu_ = 23;  // negotiated on ESP_GATTC_CFG_MTU_EVT; larger => fewer TX chunks
             int post_wake_poll_time_;
             int poll_data_period_;
             int poll_asleep_period_;
