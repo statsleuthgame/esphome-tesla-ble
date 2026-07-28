@@ -2,13 +2,9 @@ esp32_ble_tracker:
   scan_parameters:
     # Depending on the model and state, BLE advertisements come every 20ms or every 150ms.
     interval: 150ms
-    # Activate scan only after wifi connect, see https://github.com/esphome/issues/issues/2941#issuecomment-1842369092
-    continuous: false
-
-wifi:
-  # Activate scan only after wifi connect, see https://github.com/esphome/issues/issues/2941#issuecomment-1842369092
-  on_connect:
-    - esp32_ble_tracker.start_scan:
-        continuous: true
-  on_disconnect:
-    - esp32_ble_tracker.stop_scan:
+    # ALWAYS scan. The upstream wifi-gated workaround (esphome issues #2941,
+    # 2022-era coexistence crash) meant a device away from its WiFi could
+    # never re-find the car after a BLE drop - fatal in a vehicle, where WiFi
+    # is a bench convenience and BLE is the product. ESP32-S3 + current
+    # ESP-IDF coexistence handles WiFi+BLE scanning concurrently.
+    continuous: true
