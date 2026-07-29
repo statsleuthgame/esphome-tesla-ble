@@ -276,6 +276,8 @@ namespace esphome
             RouteMiles,
             SpeedMph,
             PowerKw,
+            Latitude,
+            Longitude,
             Count
         };
 

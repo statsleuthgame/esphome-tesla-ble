@@ -1038,6 +1038,8 @@ namespace esphome
             sendCarServerVehicleActionMessage (BLE_CarServer_VehicleAction::GET_CHARGE_STATE, 0);
           if ((number_updates_since_connection_ % get_action_detail(BLE_CarServer_VehicleAction::GET_DRIVE_STATE).numberUpdatesBetweenGets) == 0)
             sendCarServerVehicleActionMessage (BLE_CarServer_VehicleAction::GET_DRIVE_STATE, 0);
+          if ((number_updates_since_connection_ % get_action_detail(BLE_CarServer_VehicleAction::GET_LOCATION_STATE).numberUpdatesBetweenGets) == 0)
+            sendCarServerVehicleActionMessage (BLE_CarServer_VehicleAction::GET_LOCATION_STATE, 0);
           if ((number_updates_since_connection_ % get_action_detail(BLE_CarServer_VehicleAction::GET_CLIMATE_STATE).numberUpdatesBetweenGets) == 0)
             sendCarServerVehicleActionMessage (BLE_CarServer_VehicleAction::GET_CLIMATE_STATE, 0);
           if ((number_updates_since_connection_ % get_action_detail(BLE_CarServer_VehicleAction::GET_CLOSURES_STATE).numberUpdatesBetweenGets) == 0)
@@ -1961,6 +1963,20 @@ namespace esphome
               ESP_LOGI (TAG, "No data to set odometer");
             }
             publishSensor (TextSensorId::LastUpdate, ctime(&timestamp));
+          }
+          else if (carserver_response.response_msg.vehicleData.has_location_state)
+          {
+            // Current GPS position. Prefer native (WGS/GCJ by region); fall back
+            // to the plain lat/long. The knob reverse-geocodes this to City, ST.
+            auto &ls = carserver_response.response_msg.vehicleData.location_state;
+            if (ls.which_optional_native_latitude)
+              publishSensor (NumericSensorId::Latitude, ls.optional_native_latitude.native_latitude);
+            else if (ls.which_optional_latitude)
+              publishSensor (NumericSensorId::Latitude, ls.optional_latitude.latitude);
+            if (ls.which_optional_native_longitude)
+              publishSensor (NumericSensorId::Longitude, ls.optional_native_longitude.native_longitude);
+            else if (ls.which_optional_longitude)
+              publishSensor (NumericSensorId::Longitude, ls.optional_longitude.longitude);
           }
           else if (carserver_response.response_msg.vehicleData.has_climate_state)
           {

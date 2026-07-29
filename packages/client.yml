@@ -207,6 +207,12 @@ tesla_ble_vehicle:
   power_kw:
     id: "power_kw"
     name: "Power"
+  latitude:
+    id: "latitude"
+    name: "Latitude"
+  longitude:
+    id: "longitude"
+    name: "Longitude"
   route_destination:
     id: "route_destination"
     name: "Destination"

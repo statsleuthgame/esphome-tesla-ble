@@ -128,6 +128,10 @@ SENSORS = {
         icon = "mdi:speedometer", device_class = sensor.DEVICE_CLASS_SPEED, accuracy_decimals = 0, unit_of_measurement = "mph",),
     "power_kw": numeric (NumericSensorId.PowerKw,
         icon = "mdi:lightning-bolt", device_class = sensor.DEVICE_CLASS_POWER, accuracy_decimals = 0, unit_of_measurement = "kW",),
+    "latitude": numeric (NumericSensorId.Latitude,
+        icon = "mdi:latitude", accuracy_decimals = 5, unit_of_measurement = "°",),
+    "longitude": numeric (NumericSensorId.Longitude,
+        icon = "mdi:longitude", accuracy_decimals = 5, unit_of_measurement = "°",),
     "route_destination": text (TextSensorId.RouteDestination,
         icon = "mdi:map-marker",),
 }
