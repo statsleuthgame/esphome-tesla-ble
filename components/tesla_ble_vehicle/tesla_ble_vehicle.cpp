@@ -1898,6 +1898,32 @@ namespace esphome
             {
               ESP_LOGI (TAG, "No data to set shift state");
             }
+            // Route ETA: publish NAN when no active route so consumers can
+            // distinguish "no route" (NAN) from "never seen" (no state).
+            if (carserver_response.response_msg.vehicleData.drive_state.which_optional_active_route_minutes_to_arrival)
+            {
+              publishSensor (NumericSensorId::RouteMinutes, carserver_response.response_msg.vehicleData.drive_state.optional_active_route_minutes_to_arrival.active_route_minutes_to_arrival);
+            }
+            else
+            {
+              publishSensor (NumericSensorId::RouteMinutes, NAN);
+            }
+            if (carserver_response.response_msg.vehicleData.drive_state.which_optional_active_route_miles_to_arrival)
+            {
+              publishSensor (NumericSensorId::RouteMiles, carserver_response.response_msg.vehicleData.drive_state.optional_active_route_miles_to_arrival.active_route_miles_to_arrival);
+            }
+            else
+            {
+              publishSensor (NumericSensorId::RouteMiles, NAN);
+            }
+            if (carserver_response.response_msg.vehicleData.drive_state.which_optional_speed_float)
+            {
+              publishSensor (NumericSensorId::SpeedMph, carserver_response.response_msg.vehicleData.drive_state.optional_speed_float.speed_float);
+            }
+            if (carserver_response.response_msg.vehicleData.drive_state.which_optional_power)
+            {
+              publishSensor (NumericSensorId::PowerKw, carserver_response.response_msg.vehicleData.drive_state.optional_power.power);
+            }
             if (carserver_response.response_msg.vehicleData.drive_state.which_optional_odometer_in_hundredths_of_a_mile)
             {
               publishSensor (NumericSensorId::Odometer, carserver_response.response_msg.vehicleData.drive_state.optional_odometer_in_hundredths_of_a_mile.odometer_in_hundredths_of_a_mile);

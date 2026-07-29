@@ -118,6 +118,16 @@ SENSORS = {
         icon = "mdi:speedometer", device_class = sensor.DEVICE_CLASS_SPEED, accuracy_decimals = 0, unit_of_measurement = "mph",),
     "command_latency": numeric (NumericSensorId.CommandLatency,
         icon = "mdi:timer-outline", device_class = sensor.DEVICE_CLASS_DURATION, accuracy_decimals = 0, unit_of_measurement = "ms",),
+    "fast_charger_present": binary (BinarySensorId.FastChargerPresent,
+        icon = "mdi:ev-station",),
+    "route_minutes_to_arrival": numeric (NumericSensorId.RouteMinutes,
+        icon = "mdi:map-clock", device_class = sensor.DEVICE_CLASS_DURATION, accuracy_decimals = 0, unit_of_measurement = "min",),
+    "route_miles_to_arrival": numeric (NumericSensorId.RouteMiles,
+        icon = "mdi:map-marker-distance", device_class = sensor.DEVICE_CLASS_DISTANCE, accuracy_decimals = 1, unit_of_measurement = "mi",),
+    "speed_mph": numeric (NumericSensorId.SpeedMph,
+        icon = "mdi:speedometer", device_class = sensor.DEVICE_CLASS_SPEED, accuracy_decimals = 0, unit_of_measurement = "mph",),
+    "power_kw": numeric (NumericSensorId.PowerKw,
+        icon = "mdi:lightning-bolt", device_class = sensor.DEVICE_CLASS_POWER, accuracy_decimals = 0, unit_of_measurement = "kW",),
 }
 
 SENSOR_TYPES_INFO = {

@@ -236,6 +236,7 @@ namespace esphome
             IsFrunkOpen,
             IsClimateOn,
             WindowsState,
+            FastChargerPresent,
             Count
         };
         enum class TextSensorId : uint8_t {
@@ -269,6 +270,10 @@ namespace esphome
             ChargeRate,
             DriverTemp,
             CommandLatency,
+            RouteMinutes,
+            RouteMiles,
+            SpeedMph,
+            PowerKw,
             Count
         };
 

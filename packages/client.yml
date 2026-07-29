@@ -192,6 +192,21 @@ tesla_ble_vehicle:
     id: "command_latency"
     name: "Command latency"
     entity_category: diagnostic
+  fast_charger_present:
+    id: "fast_charger_present"
+    name: "Fast charger"
+  route_minutes_to_arrival:
+    id: "route_minutes_to_arrival"
+    name: "Route minutes to arrival"
+  route_miles_to_arrival:
+    id: "route_miles_to_arrival"
+    name: "Route miles to arrival"
+  speed_mph:
+    id: "speed_mph"
+    name: "Speed"
+  power_kw:
+    id: "power_kw"
+    name: "Power"
 
 button:
   - platform: template
