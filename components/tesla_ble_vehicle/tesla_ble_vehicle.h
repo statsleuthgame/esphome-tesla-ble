@@ -246,8 +246,8 @@ namespace esphome
             ChargingState,
             ChargePortLatchState,
             LastUpdate,
-            Count
             RouteDestination,
+            Count
         };
         enum class NumericSensorId : uint8_t {
             ChargeState,
