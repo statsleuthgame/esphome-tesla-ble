@@ -11,6 +11,7 @@
 
 #include <esp_gattc_api.h>
 #include <esp_gap_ble_api.h>
+#include <sys/time.h>
 #include <esphome/components/binary_sensor/binary_sensor.h>
 #include <esphome/components/text_sensor/text_sensor.h>
 #include <esphome/components/sensor/sensor.h>
@@ -246,6 +247,7 @@ namespace esphome
             ChargePortLatchState,
             LastUpdate,
             Count
+            RouteDestination,
         };
         enum class NumericSensorId : uint8_t {
             ChargeState,

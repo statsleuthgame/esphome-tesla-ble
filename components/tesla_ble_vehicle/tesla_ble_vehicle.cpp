@@ -1902,7 +1902,31 @@ namespace esphome
             {
               ESP_LOGI (TAG, "No data to set shift state");
             }
-            // Route ETA: publish NAN when no active route so consumers can
+            // Car wall-clock: the car sends real Unix time in every drive_state
+            // response. Seed the ESP clock from it if the clock isn't set yet
+            // (year < 2021) - covers the no-WiFi case where SNTP never ran.
+            if (carserver_response.response_msg.vehicleData.drive_state.has_timestamp)
+            {
+              time_t car_epoch = (time_t) carserver_response.response_msg.vehicleData.drive_state.timestamp.seconds;
+              time_t nowt = time(nullptr);
+              struct tm nowtm; localtime_r(&nowt, &nowtm);
+              if (car_epoch > 1600000000 && nowtm.tm_year < 121)
+              {
+                struct timeval tv; tv.tv_sec = car_epoch; tv.tv_usec = 0;
+                settimeofday(&tv, nullptr);
+                ESP_LOGI(TAG, "Clock set from car: %ld", (long) car_epoch);
+              }
+            }
+            // Active navigation destination name (empty when no route)
+            if (carserver_response.response_msg.vehicleData.drive_state.which_optional_active_route_destination)
+            {
+              publishSensor (TextSensorId::RouteDestination, carserver_response.response_msg.vehicleData.drive_state.optional_active_route_destination.active_route_destination);
+            }
+            else
+            {
+              publishSensor (TextSensorId::RouteDestination, "");
+            }
+                        // Route ETA: publish NAN when no active route so consumers can
             // distinguish "no route" (NAN) from "never seen" (no state).
             if (carserver_response.response_msg.vehicleData.drive_state.which_optional_active_route_minutes_to_arrival)
             {

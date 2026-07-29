@@ -207,6 +207,9 @@ tesla_ble_vehicle:
   power_kw:
     id: "power_kw"
     name: "Power"
+  route_destination:
+    id: "route_destination"
+    name: "Destination"
 
 button:
   - platform: template
