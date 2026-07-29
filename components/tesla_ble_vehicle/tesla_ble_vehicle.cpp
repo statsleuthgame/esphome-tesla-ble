@@ -1809,6 +1809,10 @@ namespace esphome
             {
               ESP_LOGI (TAG, "No data to set minutes to charge limit");
             }
+            if (carserver_response.response_msg.vehicleData.charge_state.which_optional_fast_charger_present)
+            {
+              publishSensor (BinarySensorId::FastChargerPresent, carserver_response.response_msg.vehicleData.charge_state.optional_fast_charger_present.fast_charger_present);
+            }
             if (carserver_response.response_msg.vehicleData.charge_state.which_optional_battery_range)
             {            
               publishSensor (NumericSensorId::BatteryRange, carserver_response.response_msg.vehicleData.charge_state.optional_battery_range.battery_range);
